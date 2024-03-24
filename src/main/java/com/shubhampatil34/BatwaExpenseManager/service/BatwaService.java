@@ -42,4 +42,13 @@ public class BatwaService {
         }
         throw new BatwaException("Batwa doesn't exists for id: " + id);
     }
+
+    public boolean delete(Long id){
+        Optional<Batwa> batwa = batwaRepository.findById(id);
+        if(batwa.isPresent()){
+            batwaRepository.delete(batwa.get());
+            return true;
+        }
+        throw new BatwaException("Batwa doesn't exists for id: " + id);
+    }
 }
