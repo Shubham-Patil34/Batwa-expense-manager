@@ -6,20 +6,41 @@ import com.shubhampatil34.BatwaExpenseManager.repository.BatwaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BatwaService {
     @Autowired
     private BatwaRepository batwaRepository;
+
+    public List<Batwa> getAll(){
+        return batwaRepository.findAllByOrderByPriority();
+    }
+
+    public Batwa getById(Long id){
+        Optional<Batwa> batwa = batwaRepository.findById(id);
+        if(batwa.isPresent()){
+            return batwa.get();
+        }
+        throw new BatwaException("Batwa doesn't exists for id: " + id);
+    }
+
     public Batwa createOrUpdate(Batwa batwa){
-        if(batwa.getId() == null){
-            batwaRepository.save(batwa);
+        return batwaRepository.save(batwa);
+    }
+
+    public boolean isExists(Long id){
+        return  batwaRepository.findById(id).isPresent();
+    }
+
+    public boolean delete(Long id){
+        Optional<Batwa> batwa = batwaRepository.findById(id);
+        if(batwa.isPresent()){
+            batwaRepository.delete(batwa.get());
+            return true;
         }
-        else{
-            batwaRepository.save(batwa);
-        }
-        return batwa;
+        throw new BatwaException("Batwa doesn't exists for id: " + id);
     }
 
     public boolean delete(Long id){

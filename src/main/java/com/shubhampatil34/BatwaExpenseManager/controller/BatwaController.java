@@ -1,6 +1,7 @@
 package com.shubhampatil34.BatwaExpenseManager.controller;
 
 import com.shubhampatil34.BatwaExpenseManager.entity.Batwa;
+import com.shubhampatil34.BatwaExpenseManager.exception.BatwaException;
 import com.shubhampatil34.BatwaExpenseManager.service.BatwaService;
 import com.shubhampatil34.BatwaExpenseManager.service.ValidationErrorService;
 import jakarta.validation.Valid;
@@ -17,6 +18,17 @@ public class BatwaController {
     private BatwaService batwaService;
     @Autowired
     private ValidationErrorService validationErrorService;
+
+    @GetMapping("/")
+    public ResponseEntity<?> getAll(){
+        return new ResponseEntity<>(batwaService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id){
+        return new ResponseEntity<>(batwaService.getById(id), HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody Batwa batwa, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
@@ -25,6 +37,20 @@ public class BatwaController {
         }
         Batwa batwaSaved = batwaService.createOrUpdate(batwa);
         return new ResponseEntity<>(batwaSaved, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Batwa batwa, BindingResult result){
+        ResponseEntity<?> errors = validationErrorService.validate(result);
+        if (errors != null) {
+            return errors;
+        }
+        if(batwaService.isExists(id)) {
+            batwa.setId(id);
+            Batwa batwaSaved = batwaService.createOrUpdate(batwa);
+            return new ResponseEntity<>(batwaSaved, HttpStatus.OK);
+        }
+        throw new BatwaException("Batwa doesn't exists for id: " + id);
     }
 
     @DeleteMapping("/{id}")
