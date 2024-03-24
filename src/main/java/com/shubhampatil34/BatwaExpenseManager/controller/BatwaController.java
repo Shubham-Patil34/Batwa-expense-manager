@@ -18,6 +18,17 @@ public class BatwaController {
     private BatwaService batwaService;
     @Autowired
     private ValidationErrorService validationErrorService;
+
+    @GetMapping("/")
+    public ResponseEntity<?> getAll(){
+        return new ResponseEntity<>(batwaService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id){
+        return new ResponseEntity<>(batwaService.getById(id), HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@Valid @RequestBody Batwa batwa, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
