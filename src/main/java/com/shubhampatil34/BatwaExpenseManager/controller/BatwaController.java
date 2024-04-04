@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/batwa")
+@CrossOrigin
 public class BatwaController {
     @Autowired
     private BatwaService batwaService;
