@@ -24,8 +24,8 @@ public class Batwa {
     private String description;
     @Min(1)
     @Max(3)
+    @NotNull(message = "Priority must be provided")
     private Integer priority;   // 1=High; 2=Medium; 3=Low
-    @Digits(integer = 7, fraction = 4, message = "Balance must be a valid numeric value")
-    @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Balance must be a valid numeric value")
-    private String currentBalance;
+    @NotNull(message = "Balance must be provided")
+    private Double currentBalance;
 }
