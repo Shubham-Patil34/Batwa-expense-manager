@@ -1,6 +1,9 @@
 package com.shubhampatil34.BatwaExpenseManager.controller;
 
+import com.shubhampatil34.BatwaExpenseManager.entity.Batwa;
 import com.shubhampatil34.BatwaExpenseManager.entity.Transaction;
+import com.shubhampatil34.BatwaExpenseManager.exception.BatwaException;
+import com.shubhampatil34.BatwaExpenseManager.service.BatwaService;
 import com.shubhampatil34.BatwaExpenseManager.service.TransactionService;
 import com.shubhampatil34.BatwaExpenseManager.service.ValidationErrorService;
 import jakarta.validation.Valid;
@@ -32,5 +35,25 @@ public class TransactionController {
         }
         Transaction transactionSaved = transactionService.createOrUpdate(batwaId, transaction);
         return new ResponseEntity<>(transactionSaved, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{batwaId}/{transactionId}")
+    public ResponseEntity<?> update(@PathVariable Long batwaId, @PathVariable Long transactionId, @Valid @RequestBody Transaction transaction, BindingResult result){
+        ResponseEntity<?> errors = validationErrorService.validate(result);
+        if (errors != null) {
+            return errors;
+        }
+        if(transactionService.isExists(transactionId)) {
+            transaction.setId(transactionId);
+            Transaction transactionSaved = transactionService.createOrUpdate(batwaId, transaction);
+            return new ResponseEntity<>(transactionSaved, HttpStatus.OK);
+        }
+        throw new BatwaException("Transaction doesn't exists for id: " + transactionId);
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<?> delete(@PathVariable Long transactionId){
+        transactionService.delete(transactionId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
