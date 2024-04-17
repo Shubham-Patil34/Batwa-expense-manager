@@ -12,7 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/batwa")
+@RequestMapping("/api/v1/batwa")
 @CrossOrigin
 public class BatwaController {
     @Autowired
@@ -20,7 +20,7 @@ public class BatwaController {
     @Autowired
     private ValidationErrorService validationErrorService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<?> getAll(){
         return new ResponseEntity<>(batwaService.getAll(), HttpStatus.OK);
     }
@@ -30,7 +30,7 @@ public class BatwaController {
         return new ResponseEntity<>(batwaService.getById(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Batwa batwa, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
         if (errors != null) {
