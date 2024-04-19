@@ -18,19 +18,19 @@ public class Batwa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Name cannot be Null")
-    @NotBlank(message = "Name cannot be Blank")
+    @NotNull(message = "Name must be provided")
+    @NotBlank(message = "Name must be provided")
     @Size(min = 2, max = 30, message = "Name must have min 2 and max 30 characters")
     private String name;
 
     @Pattern(regexp = "^$|\\d{1,14}$", message = "Account no. can have at max 14 digits")
     private String accountNumber;
 
-    @Size(max = 100)
+    @Size(max = 100, message = "Description can contain at max 100 characters")
     private String description;
 
-    @Min(1)
-    @Max(3)
+    @Min(value = 1, message = "Priority must be selected")
+    @Max(value = 3, message = "Priority must be selected")
     @NotNull(message = "Priority must be provided")
     private Integer priority;   // 1=High; 2=Medium; 3=Low
 

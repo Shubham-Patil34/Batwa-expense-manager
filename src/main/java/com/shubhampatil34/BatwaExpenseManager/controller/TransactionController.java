@@ -1,9 +1,7 @@
 package com.shubhampatil34.BatwaExpenseManager.controller;
 
-import com.shubhampatil34.BatwaExpenseManager.entity.Batwa;
 import com.shubhampatil34.BatwaExpenseManager.entity.Transaction;
 import com.shubhampatil34.BatwaExpenseManager.exception.BatwaException;
-import com.shubhampatil34.BatwaExpenseManager.service.BatwaService;
 import com.shubhampatil34.BatwaExpenseManager.service.TransactionService;
 import com.shubhampatil34.BatwaExpenseManager.service.ValidationErrorService;
 import jakarta.validation.Valid;
@@ -33,8 +31,10 @@ public class TransactionController {
     }
 
     @PostMapping("/{batwaId}")
-    public ResponseEntity<?> create(@Valid @RequestBody Transaction transaction, @PathVariable Long batwaId,  BindingResult result){
+    public ResponseEntity<?> create(@PathVariable Long batwaId,  @Valid @RequestBody Transaction transaction, BindingResult result){
+        System.out.println(transaction);
         ResponseEntity<?> errors = validationErrorService.validate(result);
+
         if (errors != null) {
             return errors;
         }

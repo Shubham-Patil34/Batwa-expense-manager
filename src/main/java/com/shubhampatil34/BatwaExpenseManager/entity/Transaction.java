@@ -3,37 +3,34 @@ package com.shubhampatil34.BatwaExpenseManager.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.util.Date;
-
-@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@Data
+@Entity
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Min(1)
-    @NotNull(message = "Transaction amount can't be null")
+    //@Min(value = 1, message = "Amount must be greater to equal to 1")
+    @NotNull(message = "Amount must be provided")
+    @Positive(message = "Amount must be a positive numeric value")
     private Double amount;
 
+    @Size(max = 60, message = "Description can contain at max 60 characters")
     private String description;
 
     @Min(1)
     @Max(3)
-    private int type; // 1 -> income, 2 -> expense, 3 -> transfer
+    private Integer type; // 1 -> income, 2 -> expense, 3 -> transfer
 
     @JsonFormat(pattern = "yyyy-mm-dd")
+    @NotNull(message = "Date must be provided")
     private Date date;
 
     @ManyToOne(fetch = FetchType.EAGER)
