@@ -27,6 +27,18 @@ public class TransactionService {
         return null;
     }
 
+    public Transaction getById(Long batwaId, Long transactionId) {
+        Optional<Batwa> batwa = batwaRepository.findById(batwaId);
+        if (batwa.isPresent()) {
+            Optional<Transaction> transaction = transactionRepository.findById(transactionId);
+            if (transaction.isPresent()) {
+                return transaction.get();
+            }
+            throw new BatwaException("Transaction doesn't exists for id: " + transactionId);
+        }
+        throw new BatwaException("Batwa doesn't exists for id: " + batwaId);
+    }
+
     public Transaction createOrUpdate(Long batwaId, Transaction transaction) {
         Optional<Batwa> batwa = batwaRepository.findById(batwaId);
         if (batwa.isPresent()) {
@@ -51,21 +63,25 @@ public class TransactionService {
         return null;
     }
 
-    public boolean delete(Long transactionId) {
-        Optional<Transaction> transaction = transactionRepository.findById(transactionId);
-        if (transaction.isPresent()) {
-            Transaction transaction1 = transaction.get();
-            Batwa toUpdateBatwa = transaction1.getBatwa();
-            Double newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
-                    transaction1.getAmount(),
-                    0.0,
-                    transaction1.getType());
-            toUpdateBatwa.setCurrentBalance(newBalance);
-            batwaRepository.save(toUpdateBatwa);
-            transactionRepository.delete(transaction1);
-            return true;
+    public boolean delete(Long batwaId, Long transactionId) {
+        Optional<Batwa> batwa = batwaRepository.findById(batwaId);
+        if (batwa.isPresent()) {
+            Optional<Transaction> transaction = transactionRepository.findById(transactionId);
+            if (transaction.isPresent()) {
+                Transaction transaction1 = transaction.get();
+                Batwa toUpdateBatwa = transaction1.getBatwa();
+                Double newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
+                        transaction1.getAmount(),
+                        0.0,
+                        transaction1.getType());
+                toUpdateBatwa.setCurrentBalance(newBalance);
+                batwaRepository.save(toUpdateBatwa);
+                transactionRepository.delete(transaction1);
+                return true;
+            }
+            throw new BatwaException("Transaction doesn't exists for id: " + transactionId);
         }
-        throw new BatwaException("Transaction doesn't exists for id: " + transactionId);
+        throw new BatwaException("Batwa doesn't exists for id: " + batwaId);
     }
 
     public boolean isExists(Long id) {

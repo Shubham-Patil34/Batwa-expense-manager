@@ -27,6 +27,11 @@ public class TransactionController {
         return new ResponseEntity<>(transactionService.getAll(batwaId), HttpStatus.OK);
     }
 
+    @GetMapping("/{batwaId}/{transactionId}")
+    public ResponseEntity<?> getById(@PathVariable Long batwaId, @PathVariable Long transactionId){
+        return new ResponseEntity<>(transactionService.getById(batwaId, transactionId), HttpStatus.OK);
+    }
+
     @PostMapping("/{batwaId}")
     public ResponseEntity<?> create(@Valid @RequestBody Transaction transaction, @PathVariable Long batwaId,  BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
@@ -51,9 +56,9 @@ public class TransactionController {
         throw new BatwaException("Transaction doesn't exists for id: " + transactionId);
     }
 
-    @DeleteMapping("/{transactionId}")
-    public ResponseEntity<?> delete(@PathVariable Long transactionId){
-        transactionService.delete(transactionId);
+    @DeleteMapping("/{batwaId}/{transactionId}")
+    public ResponseEntity<?> delete(@PathVariable Long batwaId, @PathVariable Long transactionId){
+        transactionService.delete(batwaId, transactionId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

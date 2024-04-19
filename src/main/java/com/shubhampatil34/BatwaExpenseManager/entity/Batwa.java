@@ -37,7 +37,7 @@ public class Batwa {
     @NotNull(message = "Balance must be provided")
     private Double currentBalance;
 
-    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "batwa", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "batwa")
     @JsonIgnore
     private List<Transaction> transactions;
 }
