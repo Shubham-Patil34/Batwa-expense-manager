@@ -2,39 +2,37 @@ package com.shubhampatil34.BatwaExpenseManager.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "BATWA_TABLE")
 @Getter
 @Setter
-@Entity
+@NoArgsConstructor
 public class Batwa {
+
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull(message = "Name must be provided")
-    @NotBlank(message = "Name must be provided")
-    @Size(min = 2, max = 30, message = "Name must have min 2 and max 30 characters")
+    @Column(name = "ACCOUNT_NAME", nullable = false)
     private String name;
 
-    @Pattern(regexp = "^$|\\d{1,14}$", message = "Account no. can have at max 14 digits")
+    @Column(name = "ACCOUNT_NUMBER")
     private String accountNumber;
 
-    @Size(max = 100, message = "Description can contain at max 100 characters")
+    @Column(name = "DESCRIPTION", length = 100)
     private String description;
 
-    @Min(value = 1, message = "Priority must be selected")
-    @Max(value = 3, message = "Priority must be selected")
-    @NotNull(message = "Priority must be provided")
+    @Column(name = "DISPLAY_PRIORITY")
     private Integer priority;   // 1=High; 2=Medium; 3=Low
 
-    @NotNull(message = "Balance must be provided")
+    @Column(name = "CURRENT_BALANCE", nullable = false)
     private Double currentBalance;
 
     @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "batwa")

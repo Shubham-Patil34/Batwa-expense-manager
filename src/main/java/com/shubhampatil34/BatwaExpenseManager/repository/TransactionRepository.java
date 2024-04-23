@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    List<Transaction> findByBatwa(Batwa batwa);
+//    List<Transaction> findByBatwa(Batwa batwa);
+List<Transaction> findByBatwaOrToBatwa(Batwa batwa, Batwa toBatwa);
 }

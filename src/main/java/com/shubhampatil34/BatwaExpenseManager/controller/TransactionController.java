@@ -1,6 +1,6 @@
 package com.shubhampatil34.BatwaExpenseManager.controller;
 
-import com.shubhampatil34.BatwaExpenseManager.entity.Transaction;
+import com.shubhampatil34.BatwaExpenseManager.dto.TransactionDTO;
 import com.shubhampatil34.BatwaExpenseManager.exception.BatwaException;
 import com.shubhampatil34.BatwaExpenseManager.service.TransactionService;
 import com.shubhampatil34.BatwaExpenseManager.service.ValidationErrorService;
@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/lenden")
@@ -21,36 +23,36 @@ public class TransactionController {
     private ValidationErrorService validationErrorService;
 
     @GetMapping("/{batwaId}")
-    public ResponseEntity<?> getAll(@PathVariable Long batwaId){
+    public ResponseEntity<List<TransactionDTO>> getAll(@PathVariable Long batwaId){
         return new ResponseEntity<>(transactionService.getAll(batwaId), HttpStatus.OK);
     }
 
     @GetMapping("/{batwaId}/{transactionId}")
-    public ResponseEntity<?> getById(@PathVariable Long batwaId, @PathVariable Long transactionId){
+    public ResponseEntity<TransactionDTO> getById(@PathVariable Long batwaId, @PathVariable Long transactionId){
         return new ResponseEntity<>(transactionService.getById(batwaId, transactionId), HttpStatus.OK);
     }
 
-    @PostMapping("/{batwaId}")
-    public ResponseEntity<?> create(@PathVariable Long batwaId,  @Valid @RequestBody Transaction transaction, BindingResult result){
-        System.out.println(transaction);
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody TransactionDTO transactionDTO, BindingResult result){
+        System.out.println(transactionDTO);
         ResponseEntity<?> errors = validationErrorService.validate(result);
 
         if (errors != null) {
             return errors;
         }
-        Transaction transactionSaved = transactionService.createOrUpdate(batwaId, transaction);
+        TransactionDTO transactionSaved = transactionService.createOrUpdate(transactionDTO);
         return new ResponseEntity<>(transactionSaved, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{batwaId}/{transactionId}")
-    public ResponseEntity<?> update(@PathVariable Long batwaId, @PathVariable Long transactionId, @Valid @RequestBody Transaction transaction, BindingResult result){
+    @PutMapping("/{transactionId}")
+    public ResponseEntity<?> update(@PathVariable Long transactionId, @Valid @RequestBody TransactionDTO transactionDTO, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
         if (errors != null) {
             return errors;
         }
         if(transactionService.isExists(transactionId)) {
-            transaction.setId(transactionId);
-            Transaction transactionSaved = transactionService.createOrUpdate(batwaId, transaction);
+            transactionDTO.setId(transactionId);
+            TransactionDTO transactionSaved = transactionService.createOrUpdate(transactionDTO);
             return new ResponseEntity<>(transactionSaved, HttpStatus.OK);
         }
         throw new BatwaException("Transaction doesn't exists for id: " + transactionId);

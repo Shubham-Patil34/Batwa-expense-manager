@@ -1,40 +1,39 @@
 package com.shubhampatil34.BatwaExpenseManager.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
+@Entity
+@Table(name="TRANSACTION_TABLE")
 @Getter
 @Setter
-@Entity
+@NoArgsConstructor
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    //@Min(value = 1, message = "Amount must be greater to equal to 1")
-    @NotNull(message = "Amount must be provided")
-    @Positive(message = "Amount must be a positive numeric value")
+    @Column(name="AMOUNT", nullable = false)
     private Double amount;
 
-    @Size(max = 60, message = "Description can contain at max 60 characters")
+    @Column(name = "DESCRIPTION", length = 60)
     private String description;
 
-    @Min(1)
-    @Max(3)
+    @Column(name = "TYPE", nullable = false)
     private Integer type; // 1 -> income, 2 -> expense, 3 -> transfer
 
-    @JsonFormat(pattern = "yyyy-mm-dd")
-    @NotNull(message = "Date must be provided")
+    @Column(name = "DATE", nullable = false)
     private Date date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "batwa_id", nullable = false, updatable = false)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BATWA_ID", nullable = false)
     private Batwa batwa;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TO_BATWA_ID")
+    private Batwa toBatwa;
 }
