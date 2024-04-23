@@ -1,6 +1,6 @@
 package com.shubhampatil34.BatwaExpenseManager.controller;
 
-import com.shubhampatil34.BatwaExpenseManager.entity.Batwa;
+import com.shubhampatil34.BatwaExpenseManager.dto.BatwaDTO;
 import com.shubhampatil34.BatwaExpenseManager.exception.BatwaException;
 import com.shubhampatil34.BatwaExpenseManager.service.BatwaService;
 import com.shubhampatil34.BatwaExpenseManager.service.ValidationErrorService;
@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/batwa")
@@ -21,34 +23,34 @@ public class BatwaController {
     private ValidationErrorService validationErrorService;
 
     @GetMapping
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<List<BatwaDTO>> getAll(){
         return new ResponseEntity<>(batwaService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
+    public ResponseEntity<BatwaDTO> getById(@PathVariable Long id){
         return new ResponseEntity<>(batwaService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody Batwa batwa, BindingResult result){
+    public ResponseEntity<?> create(@Valid @RequestBody BatwaDTO batwaDTO, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
         if (errors != null) {
             return errors;
         }
-        Batwa batwaSaved = batwaService.createOrUpdate(batwa);
+        BatwaDTO batwaSaved = batwaService.createOrUpdate(batwaDTO);
         return new ResponseEntity<>(batwaSaved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Batwa batwa, BindingResult result){
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody BatwaDTO batwaDTO, BindingResult result){
         ResponseEntity<?> errors = validationErrorService.validate(result);
         if (errors != null) {
             return errors;
         }
         if(batwaService.isExists(id)) {
-            batwa.setId(id);
-            Batwa batwaSaved = batwaService.createOrUpdate(batwa);
+            batwaDTO.setId(id);
+            BatwaDTO batwaSaved = batwaService.createOrUpdate(batwaDTO);
             return new ResponseEntity<>(batwaSaved, HttpStatus.OK);
         }
         throw new BatwaException("Batwa doesn't exists for id: " + id);
