@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 public class TransactionConverter {
     public Transaction convertDTOtoEntity(TransactionDTO transactionDTO) {
         Transaction transaction = new Transaction();
-        if (transactionDTO.getId() != null) {
-            transaction.setId(transactionDTO.getId());
-        }
         transaction.setAmount(transactionDTO.getAmount());
         transaction.setDescription(transactionDTO.getDescription());
         transaction.setType(transactionDTO.getType());
