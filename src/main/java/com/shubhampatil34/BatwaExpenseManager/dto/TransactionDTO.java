@@ -27,7 +27,7 @@ public class TransactionDTO {
     @Max(3)
     private Integer type; // 1 -> income, 2 -> expense, 3 -> transfer
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull(message = "Date must be provided")
     private Date date;
 

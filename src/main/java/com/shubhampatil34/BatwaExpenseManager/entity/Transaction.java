@@ -27,6 +27,7 @@ public class Transaction {
     private Integer type; // 1 -> income, 2 -> expense, 3 -> transfer
 
     @Column(name = "DATE", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)

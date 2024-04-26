@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 //    List<Transaction> findByBatwa(Batwa batwa);
-List<Transaction> findByBatwaOrToBatwa(Batwa batwa, Batwa toBatwa);
+List<Transaction> findByBatwaOrToBatwaOrderByDateDesc(Batwa batwa, Batwa toBatwa);
 }

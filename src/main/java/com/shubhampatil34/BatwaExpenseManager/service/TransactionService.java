@@ -31,7 +31,7 @@ public class TransactionService {
         Optional<Batwa> batwa = batwaRepository.findById(batwaId);
         if (batwa.isPresent()) {
 //            return transactionRepository.findByBatwa(batwa.get());
-            List<Transaction> listOfTransactions = (List<Transaction>) transactionRepository.findByBatwaOrToBatwa(batwa.get(), batwa.get());
+            List<Transaction> listOfTransactions = (List<Transaction>) transactionRepository.findByBatwaOrToBatwaOrderByDateDesc(batwa.get(), batwa.get());
             List<TransactionDTO> listOfTransactionDTO = new ArrayList<>();
 
             for (Transaction transaction : listOfTransactions) {
