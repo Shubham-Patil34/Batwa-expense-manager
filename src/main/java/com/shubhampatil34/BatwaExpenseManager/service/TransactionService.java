@@ -30,7 +30,6 @@ public class TransactionService {
     public List<TransactionDTO> getAll(Long batwaId) {
         Optional<Batwa> batwa = batwaRepository.findById(batwaId);
         if (batwa.isPresent()) {
-//            return transactionRepository.findByBatwa(batwa.get());
             List<Transaction> listOfTransactions = (List<Transaction>) transactionRepository.findByBatwaOrToBatwaOrderByDateDesc(batwa.get(), batwa.get());
             List<TransactionDTO> listOfTransactionDTO = new ArrayList<>();
 
@@ -41,7 +40,7 @@ public class TransactionService {
 
             return listOfTransactionDTO;
         }
-        return null;
+        throw new BatwaException("Batwa doesn't exists for id: " + batwaId);
     }
 
     public TransactionDTO getById(Long batwaId, Long transactionId) {

@@ -35,9 +35,14 @@ public class TransactionDTO {
 
     private Long toBatwaId;
 
-    @AssertTrue(message = "a/c must be selected for transfer")
+    @AssertTrue(message = "Target a/c must be selected for transfer")
     private boolean isToBatwaIdValid() {
-        return !(type != null && type == 3 && (toBatwaId == null || batwaId == null));
+        return !(type != null && type == 3 && toBatwaId == null);
+    }
+
+    @AssertTrue(message = "Source a/c must be selected")
+    private boolean isFromBatwaIdValid() {
+        return batwaId != null;
     }
 
     @AssertTrue(message = "Target a/c should only be selected for transfer")
