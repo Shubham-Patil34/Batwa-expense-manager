@@ -31,7 +31,7 @@ public class TransactionService {
         Optional<Batwa> batwa = batwaRepository.findById(batwaId);
         if (batwa.isPresent()) {
 //            return transactionRepository.findByBatwa(batwa.get());
-            List<Transaction> listOfTransactions = (List<Transaction>) transactionRepository.findByBatwaOrToBatwa(batwa.get(), batwa.get());
+            List<Transaction> listOfTransactions = (List<Transaction>) transactionRepository.findByBatwaOrToBatwaOrderByDateDesc(batwa.get(), batwa.get());
             List<TransactionDTO> listOfTransactionDTO = new ArrayList<>();
 
             for (Transaction transaction : listOfTransactions) {
@@ -62,40 +62,30 @@ public class TransactionService {
 
         if (fromBatwa.isPresent()) {
             transaction.setBatwa(fromBatwa.get());
-
-            // TODO - transfer transaction
-            Batwa toUpdateBatwa = fromBatwa.get();
-            Double oldTransactionAmount = transaction.getId() == null ?
-                    0.0 :
-                    (transactionRepository.findById(transaction.getId()).isPresent() ?
-                            transactionRepository.findById(transaction.getId()).get().getAmount() :
-                            0.0);
-            Double newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
-                    oldTransactionAmount,
-                    transaction.getAmount(),
-                    transaction.getType());
-            toUpdateBatwa.setCurrentBalance(newBalance);
-            batwaRepository.save(toUpdateBatwa);
-
-            if (transaction.getType() == 3) {
-                Optional<Batwa> toBatwa = batwaRepository.findById(transactionDTO.getToBatwaId());
-                if (toBatwa.isPresent()) {
-                    transaction.setToBatwa(toBatwa.get());
-
-                    toUpdateBatwa = toBatwa.get();
-                    newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
-                            oldTransactionAmount,
-                            transaction.getAmount(),
-                            1);
-                    toUpdateBatwa.setCurrentBalance(newBalance);
+            if (transactionDTO.getToBatwaId() != null) {
+                batwa = batwaRepository.findById(transactionDTO.getToBatwaId());
+                if (batwa.isPresent()) {
+                    transaction.setToBatwa(batwa.get());
+                    Batwa toUpdateBatwa = batwa.get();
+                    toUpdateBatwa.setCurrentBalance(toUpdateBatwa.getCurrentBalance() + transaction.getAmount());
                     batwaRepository.save(toUpdateBatwa);
-                } else {
-                    throw new BatwaException("Batwa doesn't exists for id: " + transactionDTO.getToBatwaId());
                 }
             }
 
-            transactionDTO = transactionConverter.convertEntityToDTO(transaction);
-            transactionRepository.save(transaction);
+            Batwa toUpdateBatwa = fromBatwa.get();
+            Double newBalance = switch (transaction.getType()) {
+                case 1 -> toUpdateBatwa.getCurrentBalance() + transaction.getAmount();
+                case 2, 3 -> toUpdateBatwa.getCurrentBalance() - transaction.getAmount();
+                default -> toUpdateBatwa.getCurrentBalance();
+            };
+
+            toUpdateBatwa.setCurrentBalance(newBalance);
+            batwaRepository.save(toUpdateBatwa);
+            if (transactionDTO.getId() != null) {
+                this.delete(transaction.getBatwa().getId(), transactionDTO.getId());
+            }
+
+            transactionDTO = transactionConverter.convertEntityToDTO(transactionRepository.save(transaction));
             return transactionDTO;
         }
         return null;
@@ -108,21 +98,17 @@ public class TransactionService {
             if (transaction.isPresent()) {
                 Transaction transaction1 = transaction.get();
                 Batwa toUpdateBatwa = transaction1.getBatwa();
-                Double newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
-                        transaction1.getAmount(),
-                        0.0,
-                        transaction1.getType());
+                Double newBalance = switch (transaction1.getType()) {
+                    case 1 -> toUpdateBatwa.getCurrentBalance() - transaction1.getAmount();
+                    case 2, 3 -> toUpdateBatwa.getCurrentBalance() + transaction1.getAmount();
+                    default -> toUpdateBatwa.getCurrentBalance();
+                };
                 toUpdateBatwa.setCurrentBalance(newBalance);
                 batwaRepository.save(toUpdateBatwa);
 
                 if (transaction1.getType() == 3) {
                     toUpdateBatwa = transaction1.getToBatwa();
-
-                    newBalance = getUpdatedBalance(toUpdateBatwa.getCurrentBalance(),
-                            transaction1.getAmount(),
-                            0.0,
-                            1);
-                    toUpdateBatwa.setCurrentBalance(newBalance);
+                    toUpdateBatwa.setCurrentBalance(toUpdateBatwa.getCurrentBalance() - transaction1.getAmount());
                     batwaRepository.save(toUpdateBatwa);
                 }
 
@@ -137,14 +123,4 @@ public class TransactionService {
     public boolean isExists(Long id) {
         return transactionRepository.findById(id).isPresent();
     }
-
-    private Double getUpdatedBalance(Double currentBalance, Double oldTransactionAmount, Double newTransactionAmount, int transactionType) {
-        return switch (transactionType) {
-            case 1 -> currentBalance - oldTransactionAmount + newTransactionAmount;
-            case 2, 3 -> currentBalance + oldTransactionAmount - newTransactionAmount;
-            default -> currentBalance;
-        };
-    }
-
-
 }

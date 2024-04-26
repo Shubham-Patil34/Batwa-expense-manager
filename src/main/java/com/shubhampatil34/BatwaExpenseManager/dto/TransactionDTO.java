@@ -27,7 +27,7 @@ public class TransactionDTO {
     @Max(3)
     private Integer type; // 1 -> income, 2 -> expense, 3 -> transfer
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull(message = "Date must be provided")
     private Date date;
 
@@ -35,9 +35,13 @@ public class TransactionDTO {
 
     private Long toBatwaId;
 
-    @AssertTrue(message = "Target a/c must be selected for transfer transaction")
+    @AssertTrue(message = "a/c must be selected for transfer")
     private boolean isToBatwaIdValid() {
-        return !(type != null && type == 3 && toBatwaId == null);
+        return !(type != null && type == 3 && (toBatwaId == null || batwaId == null));
     }
 
+    @AssertTrue(message = "Target a/c should only be selected for transfer")
+    private boolean isToBatwaIdInValid() {
+        return !(type != null && type != 3 && toBatwaId != null);
+    }
 }

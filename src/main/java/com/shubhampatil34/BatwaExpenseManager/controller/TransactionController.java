@@ -34,7 +34,6 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody TransactionDTO transactionDTO, BindingResult result){
-        System.out.println(transactionDTO);
         ResponseEntity<?> errors = validationErrorService.validate(result);
 
         if (errors != null) {
