@@ -35,7 +35,7 @@ public class Batwa {
     @Column(name = "CURRENT_BALANCE", nullable = false)
     private Double currentBalance;
 
-    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "batwa")
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.MERGE}, fetch = FetchType.EAGER, mappedBy = "batwa")
     @JsonIgnore
     private List<Transaction> transactions;
 }
